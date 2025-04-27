@@ -18,6 +18,76 @@ const severityBarColors = {
   Low: '#22c55e',     // Tailwind green-500
 };
 
+// Stat Card component
+function StatCard({ color, bgColor, label, value, icon }) {
+  return (
+    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+      <div className="flex items-center">
+        <div className={`p-3 rounded-lg ${bgColor} ${color} mr-4`}>{icon}</div>
+        <div>
+          <p className="text-sm text-gray-500">{label}</p>
+          <p className="text-2xl font-semibold text-gray-800">{value}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Bar Chart Card
+function SeverityBarChart({ data }) {
+  return (
+    <div className="bg-gradient-to-br from-blue-50 via-white to-blue-100 rounded-2xl p-4 sm:p-8 shadow-lg w-full md:w-1/2 flex flex-col items-center border border-blue-100">
+      <h2 className="text-base font-semibold text-blue-700 mb-2">Incidents by Severity</h2>
+      <ResponsiveContainer width="100%" height={220} minWidth={180}>
+        <BarChart data={data} barSize={40}>
+          <CartesianGrid strokeDasharray="3 3" vertical={false} />
+          <XAxis dataKey="severity" className="text-xs font-medium" axisLine={false} tickLine={false} />
+          <YAxis allowDecimals={false} className="text-xs" axisLine={false} tickLine={false} />
+          <Tooltip wrapperClassName="!rounded-lg !shadow-lg !bg-white" cursor={{ fill: '#e0e7ef' }} />
+          <Bar dataKey="count" radius={[12, 12, 0, 0]}>
+            {data.map((entry, idx) => (
+              <Cell key={`cell-${idx}`} fill={severityBarColors[entry.severity]} />
+            ))}
+            <LabelList dataKey="count" position="top" className="fill-blue-700 font-bold text-xs" />
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+// Recent Accidents Card
+function RecentAccidents({ incidents, expandedId, setExpandedId }) {
+  return (
+    <div className="bg-white rounded-xl shadow p-4 sm:p-6 w-full md:w-1/2 flex flex-col justify-between">
+      <h2 className="text-base font-semibold text-blue-700 mb-4">Recent Accidents</h2>
+      <ul className="space-y-4">
+        {incidents.map((incident) => (
+          <li key={incident.id} className="flex flex-col gap-1 border-b last:border-b-0 pb-3 last:pb-0">
+            <span className="font-semibold text-gray-800 truncate">{incident.title}</span>
+            <span className={`inline-block text-xs font-bold rounded px-2 py-0.5 mt-1 mb-1 w-fit
+              ${incident.severity === 'High' ? 'bg-red-100 text-red-700' : incident.severity === 'Medium' ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700'}`}>{incident.severity}</span>
+            <span className="text-xs text-gray-500">
+              {isNaN(new Date(incident.reported_at)) ? "N/A" : new Date(incident.reported_at).toLocaleDateString()}
+            </span>
+            <button
+              className="text-blue-600 hover:underline text-xs mt-1 self-start"
+              onClick={() => setExpandedId(expandedId === incident.id ? null : incident.id)}
+            >
+              {expandedId === incident.id ? 'Hide Details' : 'View Details'}
+            </button>
+            {expandedId === incident.id && (
+              <div className="mt-2 text-gray-700 text-sm bg-blue-50 rounded p-2 border border-blue-100">
+                {incident.description}
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function App() {
   // Dashboard chart state
   const [severityData, setSeverityData] = useState([
@@ -28,16 +98,16 @@ function App() {
   const [recentIncidents, setRecentIncidents] = useState([]);
   const [expandedIncident, setExpandedIncident] = useState(null);
 
+  // Fetch and process incidents
   useEffect(() => {
     fetch('/incidents.json')
       .then(res => res.json())
       .then(data => {
-        const counts = { High: 0, Medium: 0, Low: 0 };
-        data.forEach(inc => {
-          if (counts[inc.severity] !== undefined) {
-            counts[inc.severity]++;
-          }
-        });
+        // Count by severity
+        const counts = data.reduce((acc, inc) => {
+          if (acc[inc.severity] !== undefined) acc[inc.severity]++;
+          return acc;
+        }, { High: 0, Medium: 0, Low: 0 });
         setSeverityData([
           { severity: 'High', count: counts.High },
           { severity: 'Medium', count: counts.Medium },
@@ -46,15 +116,32 @@ function App() {
         // Sort by reported_at descending and take 3 most recent
         const sorted = [...data].sort((a, b) => new Date(b.reported_at) - new Date(a.reported_at));
         setRecentIncidents(sorted.slice(0, 3));
-
-        // Log invalid dates
-        sorted.forEach(incident => {
-          if (isNaN(new Date(incident.reported_at))) {
-            console.warn('Invalid date for incident:', incident);
-          }
-        });
       });
   }, []);
+
+  // SVG icons for stat cards
+  const icons = {
+    high: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+    ),
+    medium: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+    ),
+    low: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+    ),
+    total: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+      </svg>
+    ),
+  };
 
   return (
     <div className="flex h-screen">
@@ -73,121 +160,30 @@ function App() {
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-6">
-          <div className="bg-white rounded-xl shadow-sm p-6">
+        <main className="flex-1 overflow-y-auto p-2 sm:p-6">
+          <div className="bg-white rounded-xl shadow-sm p-2 sm:p-6">
             <Routes>
               <Route path="/" element={
-                <div className="space-y-8">
+                <div className="space-y-6 sm:space-y-8">
                   <div>
-                    <h1 className="text-2xl font-bold text-gray-800 mb-2">Welcome to RoadSafeguard</h1>
-                    <p className="text-gray-600">
+                    <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">Welcome to RoadSafeguard</h1>
+                    <p className="text-gray-600 text-sm sm:text-base">
                       A comprehensive platform for reporting and tracking road incidents to improve community safety.
                     </p>
                   </div>
 
                   {/* Stat Cards */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-                      <div className="flex items-center">
-                        <div className="p-3 rounded-lg bg-red-100 text-red-600 mr-4">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                          </svg>
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-500">High Severity</p>
-                          <p className="text-2xl font-semibold text-gray-800">{severityData.find(s => s.severity === 'High')?.count ?? 0}</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-                      <div className="flex items-center">
-                        <div className="p-3 rounded-lg bg-orange-100 text-orange-600 mr-4">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                          </svg>
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-500">Medium Severity</p>
-                          <p className="text-2xl font-semibold text-gray-800">{severityData.find(s => s.severity === 'Medium')?.count ?? 0}</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-                      <div className="flex items-center">
-                        <div className="p-3 rounded-lg bg-green-100 text-green-600 mr-4">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                          </svg>
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-500">Low Severity</p>
-                          <p className="text-2xl font-semibold text-gray-800">{severityData.find(s => s.severity === 'Low')?.count ?? 0}</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-                      <div className="flex items-center">
-                        <div className="p-3 rounded-lg bg-blue-100 text-blue-600 mr-4">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-                          </svg>
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-500">Total Reports</p>
-                          <p className="text-2xl font-semibold text-gray-800">{severityData.reduce((sum, s) => sum + s.count, 0)}</p>
-                        </div>
-                      </div>
-                    </div>
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 sm:gap-6">
+                    <StatCard color="text-red-600" bgColor="bg-red-100" label="High Severity" value={severityData.find(s => s.severity === 'High')?.count ?? 0} icon={icons.high} />
+                    <StatCard color="text-orange-600" bgColor="bg-orange-100" label="Medium Severity" value={severityData.find(s => s.severity === 'Medium')?.count ?? 0} icon={icons.medium} />
+                    <StatCard color="text-green-600" bgColor="bg-green-100" label="Low Severity" value={severityData.find(s => s.severity === 'Low')?.count ?? 0} icon={icons.low} />
+                    <StatCard color="text-blue-600" bgColor="bg-blue-100" label="Total Reports" value={severityData.reduce((sum, s) => sum + s.count, 0)} icon={icons.total} />
                   </div>
 
                   {/* Graph and Recent Accidents Row */}
-                  <div className="flex flex-col md:flex-row gap-6 mt-8">
-                    {/* Bar Chart */}
-                    <div className="bg-gradient-to-br from-blue-50 via-white to-blue-100 rounded-2xl p-8 shadow-lg w-full md:w-1/2 flex flex-col items-center border border-blue-100">
-                      <h2 className="text-base font-semibold text-blue-700 mb-2">Incidents by Severity</h2>
-                      <ResponsiveContainer width="100%" height={280} minWidth={220}>
-                        <BarChart data={severityData} barSize={40}>
-                          <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                          <XAxis dataKey="severity" className="text-xs font-medium" axisLine={false} tickLine={false} />
-                          <YAxis allowDecimals={false} className="text-xs" axisLine={false} tickLine={false} />
-                          <Tooltip wrapperClassName="!rounded-lg !shadow-lg !bg-white" cursor={{ fill: '#e0e7ef' }} />
-                          <Bar dataKey="count" radius={[12, 12, 0, 0]}>
-                            {severityData.map((entry, idx) => (
-                              <Cell key={`cell-${idx}`} fill={severityBarColors[entry.severity]} />
-                            ))}
-                            <LabelList dataKey="count" position="top" className="fill-blue-700 font-bold text-xs" />
-                          </Bar>
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </div>
-                    {/* Recent Accidents Card */}
-                    <div className="bg-white rounded-xl shadow p-6 w-full md:w-1/2 flex flex-col justify-between">
-                      <h2 className="text-base font-semibold text-blue-700 mb-4">Recent Accidents</h2>
-                      <ul className="space-y-4">
-                        {recentIncidents.map((incident) => (
-                          <li key={incident.id} className="flex flex-col gap-1 border-b last:border-b-0 pb-3 last:pb-0">
-                            <span className="font-semibold text-gray-800 truncate">{incident.title}</span>
-                            <span className={`inline-block text-xs font-bold rounded px-2 py-0.5 mt-1 mb-1 w-fit
-                              ${incident.severity === 'High' ? 'bg-red-100 text-red-700' : incident.severity === 'Medium' ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700'}`}>{incident.severity}</span>
-                            <span className="text-xs text-gray-500">
-                              {isNaN(new Date(incident.reported_at)) ? "N/A" : new Date(incident.reported_at).toLocaleDateString()}
-                            </span>
-                            <button
-                              className="text-blue-600 hover:underline text-xs mt-1 self-start"
-                              onClick={() => setExpandedIncident(expandedIncident === incident.id ? null : incident.id)}
-                            >
-                              {expandedIncident === incident.id ? 'Hide Details' : 'View Details'}
-                            </button>
-                            {expandedIncident === incident.id && (
-                              <div className="mt-2 text-gray-700 text-sm bg-blue-50 rounded p-2 border border-blue-100">
-                                {incident.description}
-                              </div>
-                            )}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                  <div className="flex flex-col gap-4 md:flex-row md:gap-6 mt-6 sm:mt-8">
+                    <SeverityBarChart data={severityData} />
+                    <RecentAccidents incidents={recentIncidents} expandedId={expandedIncident} setExpandedId={setExpandedIncident} />
                   </div>
                 </div>
               } />
