@@ -1,12 +1,50 @@
-# React + Vite
+# RoadSafeguard Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, professional web dashboard for reporting and tracking road incidents, built with React and Tailwind CSS.
 
-Currently, two official plugins are available:
+## 🚀 Getting Started
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Live Demo
+- [https://road-safeguard-yho4.vercel.app](https://road-safeguard-yho4.vercel.app)
 
-## Expanding the ESLint configuration
+### 1. Clone the repository
+```bash
+# Clone this repository
+git clone -  https://github.com/nikhilcse0427/RoadSafeguard.git
+cd RoadSafeguard
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 2. Install dependencies
+```bash
+npm install
+```
+
+### 3. Run the development server
+```bash
+npm start
+```
+
+- The app will be available at [http://localhost:3000](http://localhost:3000)
+
+### 4. Data
+- Incident data is stored in `public/incidents.json`.
+- You can edit this file to add, remove, or update incidents.
+
+## 🛠️ Tech Stack
+- **Language:** JavaScript
+- **Framework:** React (with functional components and hooks)
+- **Styling:** Tailwind CSS
+- **Charts:** Recharts
+
+## 📦 Project Structure
+- `src/` — React components and main app logic
+- `public/incidents.json` — Incident data (served as a static file)
+
+## 📝 Design Decisions & Challenges
+- **Modern UI:** Used Tailwind CSS for rapid, responsive, and modern design.
+- **Data Handling:** All incident data is loaded from a static JSON file for simplicity. In a real-world app, this would be replaced with a backend API.
+- **Expandable Details:** Each incident in the lists has a "View Details" toggle for a clean, user-friendly experience.
+- **Charts:** Used Recharts for professional, interactive data visualization.
+- **Challenge:** Since the app is static (no backend), new reports are not persisted after a page reload. For production, a backend API would be needed.
+
+
