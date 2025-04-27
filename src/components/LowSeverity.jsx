@@ -1,14 +1,15 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
 
 function LowSeverity() {
-  // This would normally fetch data from an API
-  const mockIncidents = [
-    { id: 1, title: "Minor sidewalk cracks", location: "Cedar Lane", reportDate: "2023-04-22", status: "Open" },
-    { id: 2, title: "Overgrown vegetation", location: "Park View Rd", reportDate: "2023-04-21", status: "Scheduled" },
-    { id: 3, title: "Graffiti on road signs", location: "Industrial Way", reportDate: "2023-04-20", status: "Open" },
-    { id: 4, title: "Faded pedestrian crossing", location: "School Zone, Pine St", reportDate: "2023-04-18", status: "In Progress" },
-    { id: 5, title: "Minor drainage issue", location: "Market Square", reportDate: "2023-04-16", status: "Open" }
-  ];
+  const [incidents, setIncidents] = useState([]);
+
+  useEffect(() => {
+    fetch('/incidents.json')
+      .then(res => res.json())
+      .then(data => {
+        setIncidents(data.filter(i => i.severity === 'Low'));
+      });
+  }, []);
 
   return (
     <div className="max-w-4xl mx-auto py-8">
@@ -32,44 +33,24 @@ function LowSeverity() {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Incident
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Location
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Report Date
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Incident</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reported At</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {mockIncidents.map((incident) => (
+            {incidents.map((incident) => (
               <tr key={incident.id}>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">{incident.title}</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-500">{incident.location}</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-500">{incident.reportDate}</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                    {incident.status}
-                  </span>
-                </td>
+                <td className="px-6 py-4 whitespace-nowrap">{incident.title}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{incident.description}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{new Date(incident.reported_at).toLocaleString()}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
     </div>
-  )
+  );
 }
 
-export default LowSeverity
+export default LowSeverity;

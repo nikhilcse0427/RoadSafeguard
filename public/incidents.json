@@ -1,0 +1,93 @@
+[
+  {
+    "id": 1,
+    "title": "Biased Recommendation Algorithm",
+    "description": "Algorithm consistently favored certain demographics...",
+    "severity": "Medium",
+    "reported_at": "2025-03-15T10:00:00Z"
+  },
+  {
+    "id": 2,
+    "title": "LLM Hallucination in Critical Info",
+    "description": "LLM provided incorrect safety procedure information...",
+    "severity": "High",
+    "reported_at": "2025-04-01T14:30:00Z"
+  },
+  {
+    "id": 3,
+    "title": "Minor Data Leak via Chatbot",
+    "description": "Chatbot inadvertently exposed non-sensitive user metadata...",
+    "severity": "Low",
+    "reported_at": "2025-04-09T17:45:00Z"
+  },
+  {
+    "id": 4,
+    "title": "Pothole on Main Street",
+    "description": "Large pothole causing traffic disruptions and tire damage.",
+    "severity": "High",
+    "reported_at": "2025-04-10T08:20:00Z"
+  },
+  {
+    "id": 5,
+    "title": "Broken Traffic Light",
+    "description": "Traffic light at 5th and Pine stuck on red for all directions.",
+    "severity": "Low",
+    "reported_at": "2025-03-20T09:15:00Z"
+  },
+  {
+    "id": 6,
+    "title": "Fallen Tree Blocking Road",
+    "description": "Storm knocked down a tree, completely blocking Riverside Drive.",
+    "severity": "High",
+    "reported_at": "2025-04-08T22:30:00Z"
+  },
+  {
+    "id": 7,
+    "title": "Waterlogging Near Subway Station",
+    "description": "Heavy water accumulation causing vehicles to break down.",
+    "severity": "Medium",
+    "reported_at": "2025-04-07T07:15:00Z"
+  },
+  {
+    "id": 8,
+    "title": "Missing Road Signs",
+    "description": "Stop signs missing at critical intersection near Elm School.",
+    "severity": "High",
+    "reported_at": "2025-04-06T13:10:00Z"
+  },
+  {
+    "id": 9,
+    "title": "Cracked Pavement on Highway",
+    "description": "Multiple deep cracks forming on Eastbound Highway 22.",
+    "severity": "Medium",
+    "reported_at": "2025-04-05T11:50:00Z"
+  },
+  {
+    "id": 10,
+    "title": "Oil Spill on Downtown Road",
+    "description": "Oil spill causing slippery conditions near Central Plaza.",
+    "severity": "Low",
+    "reported_at": "2025-04-04T15:00:00Z"
+  },
+  {
+    "id": 11,
+    "title": "Non-Functional Street Lights",
+    "description": "Several streetlights not working along Maple Avenue, making area unsafe at night.",
+    "severity": "Medium",
+    "reported_at": "2025-04-03T21:30:00Z"
+  },
+  {
+    "id": 12,
+    "title": "Unauthorized Speed Breakers",
+    "description": "Illegal speed bumps installed on community road without signage.",
+    "severity": "Low",
+    "reported_at": "2025-04-02T09:00:00Z"
+  },
+  {
+    "id": 13,
+    "title": "Construction Material on Roadway",
+    "description": "Construction site leaving debris and bricks scattered on public road.",
+    "severity": "Medium",
+    "reported_at": "2025-04-01T18:20:00Z"
+  }
+]
