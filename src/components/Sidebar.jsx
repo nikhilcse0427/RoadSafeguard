@@ -1,5 +1,4 @@
 import { NavLink } from 'react-router-dom';
-// import { Home, User, Settings } from 'lucide-react'; // assuming you're using lucide-react icons
 
 function Sidebar() {
   return (
@@ -68,6 +67,19 @@ function Sidebar() {
           <p className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
             Incident Severity
           </p>
+
+          <NavLink
+            to="/all-severity"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3 py-2 rounded-lg text-sm ${isActive
+                ? 'bg-blue-50 text-blue-700 font-medium'
+                : 'text-gray-700 hover:bg-gray-100'
+              }`
+            }
+          >
+            <div className="h-2 w-2 rounded-full bg-violet-700"></div>
+            <span>All Severity</span>
+          </NavLink>
 
           <NavLink
             to="/high-severity"

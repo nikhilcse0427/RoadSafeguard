@@ -62,20 +62,6 @@ function About() {
           ))}
         </div>
       </div>
-
-      {/* Call to Action */}
-      <div className="mt-24 text-center">
-        <h2 className="text-3xl font-bold text-gray-800 mb-4">
-          Ready to Drive Change?
-        </h2>
-        <p className="text-gray-600 mb-8">
-          Start reporting today. Together, we ensure safer journeys for all.
-        </p>
-        <button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-10 rounded-full shadow-lg hover:shadow-xl transition">
-          Report Now
-        </button>
-      </div>
-
     </div>
   );
 }

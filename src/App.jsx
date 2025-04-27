@@ -26,6 +26,7 @@ function App() {
     { severity: 'Low', count: 0 },
   ]);
   const [recentIncidents, setRecentIncidents] = useState([]);
+  const [expandedIncident, setExpandedIncident] = useState(null);
 
   useEffect(() => {
     fetch('/incidents.json')
@@ -62,7 +63,7 @@ function App() {
         <header className="bg-white shadow-sm z-10 py-4 px-6">
           <div className="flex items-center justify-between">
             <h1 className="text-xl font-semibold text-blue-700">
-              <span className="text-red-700 typing-effect font-mono text-2xl">RoadSafeguard</span>
+              <span className="text-red-800 typing-effect font-mono text-2xl">RoadSafeguard</span>
             </h1>
             <div className="flex items-center space-x-4">
               <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium">
@@ -172,6 +173,17 @@ function App() {
                             <span className="text-xs text-gray-500">
                               {isNaN(new Date(incident.reported_at)) ? "N/A" : new Date(incident.reported_at).toLocaleDateString()}
                             </span>
+                            <button
+                              className="text-blue-600 hover:underline text-xs mt-1 self-start"
+                              onClick={() => setExpandedIncident(expandedIncident === incident.id ? null : incident.id)}
+                            >
+                              {expandedIncident === incident.id ? 'Hide Details' : 'View Details'}
+                            </button>
+                            {expandedIncident === incident.id && (
+                              <div className="mt-2 text-gray-700 text-sm bg-blue-50 rounded p-2 border border-blue-100">
+                                {incident.description}
+                              </div>
+                            )}
                           </li>
                         ))}
                       </ul>
